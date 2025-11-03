@@ -42,7 +42,7 @@ export default function ActiveCall({
     const Assistant = ASSISTANTS[status as keyof typeof ASSISTANTS]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen xl:max-h-screen bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
             <div className="w-full flex flex-col justify-center mx-auto pt-8">
                 <div className="flex flex-col justify-between gap-10">
                     <div className="flex items-center justify-center">
