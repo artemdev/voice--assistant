@@ -49,7 +49,7 @@ export default function ActiveCall({
                         <ConversationTimer status={status} />
                     </div>
 
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center mb-6">
                         <Status status={status} />
                     </div>
 

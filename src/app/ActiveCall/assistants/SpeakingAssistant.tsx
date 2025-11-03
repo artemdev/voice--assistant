@@ -33,7 +33,7 @@ export function SpeakingAssistant({
 
             {/* Main pulsing orb */}
             <motion.div
-                className="absolute rounded-full w-full h-full bg-[linear-gradient(135deg,#a78bfa_0%,#c084fc_30%,#ec4899_100%)] shadow-[0_0_80px_rgba(168,85,247,0.6),0_0_120px_rgba(236,72,153,0.4),inset_0_0_60px_rgba(255,255,255,0.15)]"
+                className="absolute rounded-full w-full h-full bg-[linear-gradient(135deg,#a78bfa_0%,#c084fc_30%,#ec4899_100%)] shadow-[0_0_60px_rgba(168,85,247,0.6),0_0_100px_rgba(236,72,153,0.4),inset_0_0_60px_rgba(255,255,255,0.15)]"
                 animate={{
                     scale: [1, 1.08, 1],
                 }}
