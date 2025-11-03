@@ -43,7 +43,7 @@ export default function ActiveCall({
 
     return (
         <div className="min-h-screen xl:max-h-screen bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
-            <div className="w-full flex flex-col justify-center mx-auto pt-4">
+            <div className="w-full flex flex-col justify-center mx-auto py-6">
                 <div className="flex flex-col justify-between gap-10">
                     <div className="flex items-center justify-center">
                         <ConversationTimer status={status} />
@@ -53,11 +53,11 @@ export default function ActiveCall({
                         <Status status={status} />
                     </div>
 
-                    <div className="flex justify-center mb-8">
+                    <div className="flex justify-center">
                         <Assistant interruptSpeaking={interruptSpeaking} />
                     </div>
 
-                    <div className=" px-4 transition-all duration-300">
+                    <div className=" transition-all duration-300">
                         <Transcription
                             transcript={transcript ? transcript : '...'}
                             isPaused={status === STATUS.IDLE}
