@@ -1,6 +1,7 @@
 import { Mic, Volume2, PauseCircle } from 'lucide-react'
 
 import { type Status } from '@/lib/types'
+import { STATUS } from '@/lib/data'
 
 const STATUS_CONFIG = {
     idle: {
@@ -25,9 +26,16 @@ const STATUS_CONFIG = {
         glow: 'shadow-lg shadow-purple-500/40',
     },
 }
+const STATUS_KEY_MAP: Record<Status, keyof typeof STATUS_CONFIG> = {
+    [STATUS.IDLE]: 'idle',
+    [STATUS['LISTENING-PAUSED']]: 'idle',
+    [STATUS['SPEAKING-PAUSED']]: 'idle',
+    [STATUS.LISTENING]: 'listening',
+    [STATUS.SPEAKING]: 'speaking',
+}
 
 export default function Status({ status }: { status: Status }) {
-    const config = STATUS_CONFIG[status] || STATUS_CONFIG.idle
+    const config = STATUS_CONFIG[STATUS_KEY_MAP[status]]
 
     return (
         <div

@@ -2,12 +2,9 @@ import { Control } from 'react-hook-form'
 import SelectField from './SelectField'
 import { Card, SectionTitle } from '@/components/common'
 
-import {
-    NAMES,
-    ROLES,
-    TONES,
-    type PersonaFormValues,
-} from '@/lib/validations/persona'
+import { NAMES, ROLES, TONES } from '@/lib/validations/persona'
+
+import { type PersonaFormValues } from '@/lib/types'
 
 export default function PersonSection({
     control,

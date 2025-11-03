@@ -18,7 +18,7 @@ export default function ResponseScore({
         <div className="rounded-lg border p-4">
             <div className="mb-2 flex items-center justify-between">
                 <h4 className="font-medium text-gray-900">{title}</h4>
-                <StarRating rating={rating} />
+                <StarRating rating={rating || 0} />
             </div>
 
             <ResponseComparison vsPrevious={vsPrevious} vsAverage={vsAverage} />

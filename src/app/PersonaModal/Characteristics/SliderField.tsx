@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/form'
 
 import { type Control } from 'react-hook-form'
-import { type PersonaFormValues } from '@/lib/validations/persona'
+import { type PersonaFormValues } from '@/lib/types'
 
 type SliderFieldProps = {
     control: Control<PersonaFormValues>

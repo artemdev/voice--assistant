@@ -3,7 +3,7 @@ import SliderField from './SliderField'
 import { SectionTitle, Card } from '@/components/common'
 
 import { type Control } from 'react-hook-form'
-import { type PersonaFormValues } from '@/lib/validations/persona'
+import { type PersonaFormValues } from '@/lib/types'
 
 export default function Characteristics({
     control,
