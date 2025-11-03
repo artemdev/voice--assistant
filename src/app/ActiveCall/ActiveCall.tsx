@@ -83,7 +83,7 @@ export default function ActiveCall({
             </div>
 
             {/* Conversation on desktop */}
-            <div className="hidden 2xl:block absolute top-0 right-6 w-96 max-h-screen overflow-hidden">
+            <div className="hidden xl:block absolute top-0 right-6 w-96 max-h-screen overflow-hidden">
                 <Conversation conversationHistory={conversationHistory} />
             </div>
         </div>
