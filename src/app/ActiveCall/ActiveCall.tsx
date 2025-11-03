@@ -57,7 +57,7 @@ export default function ActiveCall({
                         <Assistant interruptSpeaking={interruptSpeaking} />
                     </div>
 
-                    <div className=" transition-all duration-300">
+                    <div className="m-3 transition-all duration-300">
                         <Transcription
                             transcript={transcript ? transcript : '...'}
                             isPaused={status === STATUS.IDLE}
