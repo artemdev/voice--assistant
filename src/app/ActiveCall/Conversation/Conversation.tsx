@@ -10,7 +10,7 @@ export default function Conversation({
     conversationHistory: ConversationTurn[]
 }) {
     return (
-        <div className="p-4 flex max-h-screen flex-col overflow-hidden pt-20">
+        <div className="pt-4 flex max-h-screen flex-col overflow-hidden pt-20">
             <div className="space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-transparent">
                 {conversationHistory.map((turn, index) => (
                     <ConversationMessage
