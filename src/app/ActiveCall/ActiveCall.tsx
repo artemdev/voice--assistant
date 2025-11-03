@@ -77,7 +77,7 @@ export default function ActiveCall({
                 </div>
 
                 {/* Conversation on mobile */}
-                <div className="2xl:hidden w-full ">
+                <div className="xl:hidden w-full ">
                     <Conversation conversationHistory={conversationHistory} />
                 </div>
             </div>
