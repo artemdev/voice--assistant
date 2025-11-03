@@ -43,7 +43,7 @@ export default function ActiveCall({
 
     return (
         <div className="min-h-screen xl:max-h-screen bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
-            <div className="w-full flex flex-col justify-center mx-auto py-6">
+            <div className="w-full flex flex-col justify-center mx-auto py-8">
                 <div className="flex flex-col justify-between gap-10">
                     <div className="flex items-center justify-center">
                         <ConversationTimer status={status} />

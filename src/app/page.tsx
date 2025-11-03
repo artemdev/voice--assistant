@@ -71,7 +71,7 @@ export default function Home() {
                 >
                     <ActionButton
                         handleClick={() => setIsModalOpen(true)}
-                        className="px-20 py-12"
+                        className="md:px-20 md:py-12 lg:px-6 sm:px-10 py-10 m-4"
                     >
                         CHOOSE AI PERSONA
                     </ActionButton>

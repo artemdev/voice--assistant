@@ -51,13 +51,13 @@ export default function AssessmentModal({
             {loading ? (
                 <ModalLoader />
             ) : (
-                <DialogContent className="max-h-[90vh] overflow-y-auto min-w-3xl">
+                <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:w-[90vw] md:w-[85vw] lg:min-w-3xl max-w-5xl">
                     <DialogHeader>
-                        <DialogTitle>Session Assessment</DialogTitle>
+                        <DialogTitle className="text-xl sm:text-2xl">Session Assessment</DialogTitle>
                     </DialogHeader>
 
-                    <div className="space-y-6">
-                        <div className="mb-6 grid grid-cols-2 gap-4">
+                    <div className="space-y-4 sm:space-y-6">
+                        <div className="mb-4 sm:mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <ConversationTurns
                                 turnCount={
                                     sessionData?.conversationTurns?.length || 0
