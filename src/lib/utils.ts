@@ -69,17 +69,7 @@ export function generateShareableLink(
     }
 
     try {
-        const shareData = {
-            sessionId: session.sessionId,
-            timestamp: session.timestamp,
-            duration: session.duration,
-            turnCount: session.turnCount,
-            personaConfig: session.personaConfig,
-            assessment: session.assessment,
-            comparison: session.comparison,
-        }
-
-        const encoded = btoa(JSON.stringify(shareData))
+        const encoded = btoa(JSON.stringify(session))
 
         return `${window.location.origin}/assessment/${encoded}`
     } catch (error) {
