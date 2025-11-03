@@ -30,8 +30,6 @@ type UseVoiceReturn = {
 
 import { STATUS } from '@/lib/data'
 
-const AVATAR_SPEAK_DELAY = 1000
-
 export default function useVoice({
     currentPersona,
 }: {
@@ -49,8 +47,16 @@ export default function useVoice({
 
     const speechRecognitionRef = useRef<SpeechRecognition | null>(null)
     const currentUserMessageRef = useRef('')
+    const isSpeechRecognitionAborted = useRef(false) // need this ref to handle pause of SpeechRecognition in callback
+
+    const abortSpeechRecognition = () => {
+        isSpeechRecognitionAborted.current = true
+        speechRecognitionRef.current?.abort()
+    }
 
     const startAvatarSpeak = (text: string) => {
+        setStatus(STATUS.SPEAKING)
+
         const utterance = new SpeechSynthesisUtterance(text)
         utterance.lang = 'en-US'
         utterance.rate = 0.95
@@ -58,7 +64,8 @@ export default function useVoice({
 
         utterance.onstart = (event: SpeechSynthesisEvent) => {
             try {
-                speechRecognitionRef?.current?.abort()
+                abortSpeechRecognition()
+
                 const message = (
                     event?.currentTarget as SpeechSynthesisUtterance
                 )?.text
@@ -111,7 +118,7 @@ export default function useVoice({
     const stopCall = () => {
         try {
             if (status === STATUS.LISTENING) {
-                speechRecognitionRef.current?.abort()
+                abortSpeechRecognition()
             }
             if (status === STATUS.SPEAKING) {
                 speechSynthesis.cancel()
@@ -171,15 +178,14 @@ export default function useVoice({
 
     const pauseCall = () => {
         try {
-            if (status === STATUS.LISTENING) {
-                speechRecognitionRef.current?.abort()
+            abortSpeechRecognition()
+            speechSynthesis.pause()
 
+            if (status === STATUS.LISTENING) {
                 setStatus(STATUS['LISTENING-PAUSED'])
             }
 
             if (status === STATUS.SPEAKING) {
-                speechSynthesis.pause()
-
                 setStatus(STATUS['SPEAKING-PAUSED'])
             }
         } catch (error) {
@@ -232,6 +238,8 @@ export default function useVoice({
         speechRecognitionRef.current.onspeechstart = () => {
             try {
                 speechSynthesis.cancel()
+                isSpeechRecognitionAborted.current = false
+
                 setStatus(STATUS.LISTENING)
             } catch (error) {
                 toast.error(error as string)
@@ -239,6 +247,10 @@ export default function useVoice({
         }
 
         speechRecognitionRef.current.onspeechend = () => {
+            if (isSpeechRecognitionAborted.current) {
+                return
+            }
+
             const userMessage = currentUserMessageRef.current
 
             if (userMessage) {
@@ -252,10 +264,7 @@ export default function useVoice({
                 ])
             }
 
-            setTimeout(() => {
-                setStatus(STATUS.SPEAKING)
-                startAvatarSpeak(generateResponse(transcript))
-            }, AVATAR_SPEAK_DELAY)
+            startAvatarSpeak(generateResponse(transcript))
         }
 
         const cleanup = () => {
