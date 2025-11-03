@@ -42,14 +42,14 @@ export default function ActiveCall({
     const Assistant = ASSISTANTS[status as keyof typeof ASSISTANTS]
 
     return (
-        <div className="bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-blue-150 via-blue-100 to-indigo-100 flex items-center justify-center relative overflow-hidden">
             <div className="w-full flex flex-col justify-center mx-auto pt-8">
-                <div className="flex flex-col justify-between">
-                    <div className="flex items-center justify-center mb-6 sm:mb-8 md:mb-12">
+                <div className="flex flex-col justify-between gap-10">
+                    <div className="flex items-center justify-center">
                         <ConversationTimer status={status} />
                     </div>
 
-                    <div className="flex items-center justify-center mb-15">
+                    <div className="flex items-center justify-center">
                         <Status status={status} />
                     </div>
 
@@ -57,14 +57,14 @@ export default function ActiveCall({
                         <Assistant interruptSpeaking={interruptSpeaking} />
                     </div>
 
-                    <div className="mb-8 px-4 transition-all duration-300">
+                    <div className=" px-4 transition-all duration-300">
                         <Transcription
                             transcript={transcript ? transcript : '...'}
                             isPaused={status === STATUS.IDLE}
                         />
                     </div>
 
-                    <div className="flex flex-col items-center justify-center mb-12">
+                    <div className="flex flex-col items-center justify-center">
                         <Controls
                             {...{
                                 resumeCall,
