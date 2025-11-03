@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voice AI Interface
 
-## Getting Started
+A real-time voice conversation interface that enables natural spoken interactions with customizable AI personas using browser-native speech APIs.
 
-First, run the development server:
+## How to Run Locally
+
+### Setup
+
+1. Clone the repository and navigate to the project directory
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+5. Allow microphone permissions when prompted
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technical Architecture
 
-## Learn More
+### Core Technologies
 
-To learn more about Next.js, take a look at the following resources:
+-   **Next.js 16** (React 19)
+-   **TypeScript**
+-   **Tailwind CSS v4** -
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Key Libraries
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Voice Processing:**
 
-## Deploy on Vercel
+-   `Web Speech API` - Native browser APIs for speech recognition (`SpeechRecognition`) and synthesis (`SpeechSynthesis`)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**UI Components:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+-   `Radix UI` - Accessible component primitives (Dialog, Select, Slider, Accordion)
+-   `Framer Motion` - Animations and transitions
+-   `Lucide React` - Icon library
+-   `Sonner` - Toast notifications
+
+**Form Management:**
+
+-   `React Hook Form` - Form state management
+-   `Zod` - Schema validation
+-   `@hookform/resolvers` - Form validation integration
+
+**Utilities:**
+
+-   `moment` - Date/time handling
+-   `clsx` + `tailwind-merge` - Conditional styling
+
+### Architecture Overview
+
+```
+src/
+├── app/
+│   ├── ActiveCall/         # Voice call interface
+│   │   ├── useVoice.ts     # Core voice interaction hook
+│   │   ├── Controls/       # Call controls (pause, resume, interrupt)
+│   │   ├── Conversation/   # Message history display
+│   │   └── assistants/     # Avatar states (idle, listening, speaking)
+│   ├── PersonaModal/       # AI persona configuration
+│   ├── AssessmentModal/    # Post-call assessment display
+│   └── assessment/[id]/    # Session review page
+├── components/
+│   ├── ui/                 # Reusable UI components (shadcn/ui)
+│   └── assessment/         # Assessment metrics components
+└── lib/
+    ├── types.ts            # TypeScript definitions
+    ├── validations/        # Zod schemas
+    ├── responses.ts        # AI response generation
+    └── utils.ts            # Shared utilities
+```
+
+### How It Works
+
+1. **Persona Selection**: Users configure AI personality traits (name, role, tone, OCEAN traits)
+2. **Voice Call**: Real-time bidirectional voice conversation using Web Speech API
+3. **Speech Recognition**: Converts user speech to text (`webkitSpeechRecognition`)
+4. **Response Generation**: Generates contextual AI responses based on persona
+5. **Speech Synthesis**: Converts AI responses to speech (`SpeechSynthesisUtterance`)
+6. **Assessment**: Analyzes conversation quality and provides metrics after call ends
+
+## Known Limitations
+
+### Current Limitations
+
+1. **Browser Compatibility**: Only works in browsers with Web Speech API support (Chrome, Edge, Safari). Firefox has limited support.
+
+2. **Speech Recognition Accuracy**: Dependent on browser's built-in speech recognition, which can have accuracy issues with:
+
+    - Accents and dialects
+    - Background noise
+    - Uncommon words or technical terms
+
+3. **Offline Support**: Requires internet connection as browser speech APIs use cloud services
+
+4. **Voice Selection**: Limited to browser's default voices for speech synthesis
+
+5. **No Persistence**: Conversation history and persona configurations are not saved between sessions
+
+6. **Response Intelligence**: Uses simple rule-based response generation instead of actual AI/LLM integration
