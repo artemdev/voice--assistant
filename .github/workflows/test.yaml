@@ -1,25 +1,22 @@
 name: 'test'
 on:
     pull_request:
-        types: [opened, edited, synchronize]
+        types: [opened, edited]
 
 permissions:
     pull-requests: write
-    contents: read
 
 jobs:
     validate-jira:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
             - name: Setup dependencies
               run: |
                   # Install curl and jq if not present (for act compatibility)
                   if ! command -v curl &> /dev/null; then
                       apt-get update -y && apt-get install -y curl jq
                   fi
-            - name: Extract ISSUE_KEY from PR description
+            - name: Extract ticket key from PR description
               id: extract_issue
               run: |
                   PR_BODY='${{ github.event.pull_request.body }}'
@@ -29,15 +26,15 @@ jobs:
                   ISSUE_KEY=$(echo "$PR_BODY" | grep -oP '\{[A-Z]+-[0-9]+\}' | head -1 | tr -d '{}')
 
                   if [ -z "$ISSUE_KEY" ]; then
-                    echo "⚠️ WARNING: No ISSUE_KEY found in PR description. Skipping Jira validation."
+                    echo "⚠️ WARNING: No ticket key found in PR description. Skipping Jira validation."
                     echo "ISSUE_KEY=" >> $GITHUB_OUTPUT
                     echo "SKIP_JIRA=true" >> $GITHUB_OUTPUT
                   else
-                    echo "✅ Extracted ISSUE_KEY: $ISSUE_KEY"
+                    echo "✅ Extracted ticket key: $ISSUE_KEY"
                     echo "ISSUE_KEY=$ISSUE_KEY" >> $GITHUB_OUTPUT
                     echo "SKIP_JIRA=false" >> $GITHUB_OUTPUT
                   fi
-            - name: Fetch Jira issue
+            - name: Fetch Jira ticket
               if: steps.extract_issue.outputs.SKIP_JIRA != 'true'
               id: fetch_jira
               env:
@@ -46,9 +43,10 @@ jobs:
                   ISSUE_KEY: ${{ steps.extract_issue.outputs.ISSUE_KEY }}
                   BASE_URL: ${{ secrets.JIRA_URL }}
               run: |
+                  # If curl fails, stop the entire step immediately
                   set -e
 
-                  echo "| 🔍 Fetching JIRA issue: $ISSUE_KEY"
+                  echo "| 🔍 Fetching JIRA ticket: $ISSUE_KEY"
                   echo "| 📡 From: $BASE_URL/rest/api/3/issue/$ISSUE_KEY"
 
                   RESPONSE=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
