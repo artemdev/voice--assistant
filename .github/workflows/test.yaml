@@ -1,7 +1,10 @@
 name: 'test'
 on:
     pull_request:
-        types: [opened, edited, synchronize]
+        types: [opened, edited]
+
+permissions:
+    pull-requests: write
 
 jobs:
     validate-jira:
@@ -13,7 +16,7 @@ jobs:
                   if ! command -v curl &> /dev/null; then
                       apt-get update -y && apt-get install -y curl jq
                   fi
-            - name: Extract ISSUE_KEY from PR description
+            - name: Extract ticket key from PR description
               id: extract_issue
               run: |
                   PR_BODY='${{ github.event.pull_request.body }}'
@@ -23,13 +26,16 @@ jobs:
                   ISSUE_KEY=$(echo "$PR_BODY" | grep -oP '\{[A-Z]+-[0-9]+\}' | head -1 | tr -d '{}')
 
                   if [ -z "$ISSUE_KEY" ]; then
-                    echo "❌ No ISSUE_KEY found in PR description. Please add {ISSUE_KEY} to the PR description."
-                    exit 1
+                    echo "⚠️ WARNING: No ticket key found in PR description. Skipping Jira validation."
+                    echo "ISSUE_KEY=" >> $GITHUB_OUTPUT
+                    echo "SKIP_JIRA=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "✅ Extracted ticket key: $ISSUE_KEY"
+                    echo "ISSUE_KEY=$ISSUE_KEY" >> $GITHUB_OUTPUT
+                    echo "SKIP_JIRA=false" >> $GITHUB_OUTPUT
                   fi
-
-                  echo "✅ Extracted ISSUE_KEY: $ISSUE_KEY"
-                  echo "ISSUE_KEY=$ISSUE_KEY" >> $GITHUB_OUTPUT
-            - name: Fetch Jira issue
+            - name: Fetch Jira ticket
+              if: steps.extract_issue.outputs.SKIP_JIRA != 'true'
               id: fetch_jira
               env:
                   JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
@@ -37,10 +43,8 @@ jobs:
                   ISSUE_KEY: ${{ steps.extract_issue.outputs.ISSUE_KEY }}
                   BASE_URL: ${{ secrets.JIRA_URL }}
               run: |
+                  # If curl fails, stop the entire step immediately
                   set -e
-
-                  echo "| 🔍 Fetching JIRA issue: $ISSUE_KEY"
-                  echo "| 📡 From: $BASE_URL/rest/api/3/issue/$ISSUE_KEY"
 
                   RESPONSE=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
                     -X GET \
@@ -60,38 +64,33 @@ jobs:
                   echo "TASK_URL=$TASK_URL" >> $GITHUB_OUTPUT
                   echo "PRIORITY=$PRIORITY" >> $GITHUB_OUTPUT
                   echo "LABELS=$LABELS" >> $GITHUB_OUTPUT
-            - name: Update PR description with Jira info
-              env:
-                  GH_TOKEN: ${{ github.token }}
-                  ISSUE_KEY: ${{ steps.extract_issue.outputs.ISSUE_KEY }}
-                  TASK_URL: ${{ steps.fetch_jira.outputs.TASK_URL }}
-                  PRIORITY: ${{ steps.fetch_jira.outputs.PRIORITY }}
-                  LABELS: ${{ steps.fetch_jira.outputs.LABELS }}
+            - name: Preview PR description update (for local testing)
+              if: ${{ env.ACT && steps.extract_issue.outputs.SKIP_JIRA != 'true' }}
               run: |
-                  # Get current PR body
                   PR_BODY='${{ github.event.pull_request.body }}'
+                  ISSUE_KEY='${{ steps.extract_issue.outputs.ISSUE_KEY }}'
+                  JIRA_INFO="Task: ${{ steps.fetch_jira.outputs.TASK_URL }}
+                  Priority: ${{ steps.fetch_jira.outputs.PRIORITY }}
+                  Labels: ${{ steps.fetch_jira.outputs.LABELS }}"
 
-                  # Create replacement text (3 lines)
-                  JIRA_INFO="Task: $TASK_URL
-                  Priority: $PRIORITY
-                  Labels: $LABELS"
-
-                  # Replace {ISSUE_KEY} (e.g., {CTRL-232}) with the Jira information
                   UPDATED_BODY="${PR_BODY//\{$ISSUE_KEY\}/$JIRA_INFO}"
 
                   echo ""
                   echo "=========================================="
-                  echo "📝 Updated PR Description:"
+                  echo "📝 Preview - Updated PR Description:"
                   echo "=========================================="
                   echo "$UPDATED_BODY"
                   echo "=========================================="
                   echo ""
-
-                  # Update PR description using GitHub CLI (only on real GitHub Actions)
-                  if [ -n "${{ github.event.pull_request.number }}" ] && command -v gh &> /dev/null; then
-                    echo "$UPDATED_BODY" | gh pr edit ${{ github.event.pull_request.number }} --body-file - || echo "⚠️ Running locally - skipping actual PR update"
-                  else
-                    echo "⚠️ Running locally - skipping actual PR update"
-                  fi
-
-                  echo "✅ PR description prepared with Jira information"
+                  echo "⚠️ Running with act - This is just a preview"
+            - name: Update PR description with Jira info
+              if: ${{ !env.ACT && steps.extract_issue.outputs.SKIP_JIRA != 'true' }}
+              uses: nefrob/pr-description@v1.2.0
+              with:
+                  content: |
+                      Task: ${{ steps.fetch_jira.outputs.TASK_URL }}
+                      Priority: ${{ steps.fetch_jira.outputs.PRIORITY }}
+                      Labels: ${{ steps.fetch_jira.outputs.LABELS }}
+                  regex: '\{${{ steps.extract_issue.outputs.ISSUE_KEY }}\}'
+                  regexFlags: 'g'
+                  token: ${{ secrets.GITHUB_TOKEN }}
