@@ -46,9 +46,6 @@ jobs:
                   # If curl fails, stop the entire step immediately
                   set -e
 
-                  echo "| 🔍 Fetching JIRA ticket: $ISSUE_KEY"
-                  echo "| 📡 From: $BASE_URL/rest/api/3/issue/$ISSUE_KEY"
-
                   RESPONSE=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
                     -X GET \
                     -H "Accept: application/json" \
