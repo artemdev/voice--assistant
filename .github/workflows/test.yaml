@@ -29,12 +29,14 @@ jobs:
                   ISSUE_KEY=$(echo "$PR_BODY" | grep -oP '\{[A-Z]+-[0-9]+\}' | head -1 | tr -d '{}')
 
                   if [ -z "$ISSUE_KEY" ]; then
-                    echo "❌ No ISSUE_KEY found in PR description. Please add {ISSUE_KEY} to the PR description."
-                    exit 1
+                    echo "⚠️ WARNING: No ISSUE_KEY found in PR description. Skipping Jira validation."
+                    echo "ISSUE_KEY=" >> $GITHUB_OUTPUT
+                    echo "SKIP_JIRA=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "✅ Extracted ISSUE_KEY: $ISSUE_KEY"
+                    echo "ISSUE_KEY=$ISSUE_KEY" >> $GITHUB_OUTPUT
+                    echo "SKIP_JIRA=false" >> $GITHUB_OUTPUT
                   fi
-
-                  echo "✅ Extracted ISSUE_KEY: $ISSUE_KEY"
-                  echo "ISSUE_KEY=$ISSUE_KEY" >> $GITHUB_OUTPUT
             - name: Fetch Jira issue
               id: fetch_jira
               env:
