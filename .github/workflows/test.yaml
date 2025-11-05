@@ -38,6 +38,7 @@ jobs:
                     echo "SKIP_JIRA=false" >> $GITHUB_OUTPUT
                   fi
             - name: Fetch Jira issue
+              if: steps.extract_issue.outputs.SKIP_JIRA != 'true'
               id: fetch_jira
               env:
                   JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
@@ -69,7 +70,7 @@ jobs:
                   echo "PRIORITY=$PRIORITY" >> $GITHUB_OUTPUT
                   echo "LABELS=$LABELS" >> $GITHUB_OUTPUT
             - name: Preview PR description update (for local testing)
-              if: ${{ env.ACT }}
+              if: ${{ env.ACT && steps.extract_issue.outputs.SKIP_JIRA != 'true' }}
               run: |
                   PR_BODY='${{ github.event.pull_request.body }}'
                   ISSUE_KEY='${{ steps.extract_issue.outputs.ISSUE_KEY }}'
@@ -88,7 +89,7 @@ jobs:
                   echo ""
                   echo "⚠️ Running with act - This is just a preview"
             - name: Update PR description with Jira info
-              if: ${{ !env.ACT }}
+              if: ${{ !env.ACT && steps.extract_issue.outputs.SKIP_JIRA != 'true' }}
               uses: nefrob/pr-description@v1.2.0
               with:
                   content: |
